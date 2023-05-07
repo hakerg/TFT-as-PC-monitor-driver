@@ -1,35 +1,18 @@
 #pragma once
+#include <vector>
 
-template <class T>
-ref class Array2D
-{
+template <class T, int width, int height>
+class Array2D : private std::vector<T> {
 public:
+	Array2D() : std::vector<T>(width * height) {
+		resize(size_t(width) * height);
+	}
 
-	const unsigned sizeX;
-	const unsigned sizeY;
-	T* const data;
+	T& At(int x, int y) {
+		return at(size_t(y) * width + x);
+	}
 
-	Array2D(unsigned sizeX, unsigned sizeY);
-	virtual ~Array2D();
-
-	T& At(unsigned indexX, unsigned indexY);
-
+	T* Data() {
+		return data();
+	}
 };
-
-template<class T>
-inline Array2D<T>::Array2D(unsigned sizeX, unsigned sizeY) :
-	sizeX(sizeX), sizeY(sizeY), data(new T[sizeX * sizeY])
-{
-}
-
-template<class T>
-inline Array2D<T>::~Array2D()
-{
-	delete[] data;
-}
-
-template<class T>
-inline T& Array2D<T>::At(unsigned indexX, unsigned indexY)
-{
-	return data[indexX + sizeX * indexY];
-}

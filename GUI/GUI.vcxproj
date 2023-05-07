@@ -30,28 +30,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -128,24 +128,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ArduinoIO.cpp" />
-    <ClCompile Include="Color16.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="Region.cpp" />
-    <ClCompile Include="RegionPusher.cpp" />
-    <ClCompile Include="SerialPort.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArduinoIO.h" />
+    <ClInclude Include="Arduino.h" />
+    <ClInclude Include="ArduinoBuffer.h" />
+    <ClInclude Include="ArduinoScreen.h" />
     <ClInclude Include="Array2D.h" />
+    <ClInclude Include="ClipRectangle.h" />
     <ClInclude Include="Color16.h" />
+    <ClInclude Include="FrameGenerator.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Region.h" />
-    <ClInclude Include="RegionPusher.h" />
+    <ClInclude Include="RegionError.h" />
+    <ClInclude Include="RegionFinder.h" />
     <ClInclude Include="SerialPort.h" />
+    <ClInclude Include="ThreadSafeQueue.h" />
+    <ClInclude Include="ThreadWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
