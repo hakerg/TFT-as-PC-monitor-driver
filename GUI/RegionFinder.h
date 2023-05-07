@@ -137,12 +137,11 @@ private:
 	}
 
 public:
-	// [y][x]
 	ArduinoScreen arduinoScreen;
 	ThreadSafeQueue<ArduinoScreen^>^ frameQueue;
 	ArduinoBuffer buffer;
 
-	RegionFinder(ThreadSafeQueue<ArduinoScreen^>^ frameQueue) : frameQueue(frameQueue),
+	RegionFinder(ThreadSafeQueue<ArduinoScreen^>^ frameQueue) : frameQueue(frameQueue), arduinoScreen(gcnew Color16(0, 0, 31)),
 		currentRegions(gcnew RegionErrorComparer()) {
 		regionArray = gcnew array<RegionError^, 2>(ArduinoScreen::width, ArduinoScreen::height);
 		initialRegions = gcnew array<RegionError^, 2>(ArduinoScreen::width, ArduinoScreen::height);

@@ -33,6 +33,8 @@ public:
 		SetDithered(color, x, y);
 	}
 
+	Color16(int r, int g, int b) : r(r), g(g), b(b) {}
+
 	void Set(Color16^ color)
 	{
 		r = color->r;
