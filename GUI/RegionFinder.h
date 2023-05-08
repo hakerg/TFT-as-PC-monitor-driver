@@ -57,7 +57,7 @@ private:
 		{
 			for (int x = region->x; x < region->endX; x++)
 			{
-				arduinoScreen.At(x, y)->Set(%region->color);
+				arduinoScreen.At(x, y) = region->color;
 			}
 		}
 	}
@@ -112,17 +112,22 @@ private:
 
 	void ProcessFrame(ArduinoScreen^ target) {
 		// TODO: add pixel-by-pixel mode in regions
+		// TODO: priority depends on last update time
 		PrepareUnitRegions(target);
 		MergeRegions();
 		PrepareCurrentRegions();
+	}
+
+	void PushToBuffer(Region^ region) {
+		buffer.Push(region);
+		UpdateArduinoScreen(region);
 	}
 
 	void PushRegionsIfNeeded() {
 		//std::cout << "Before: " << buffer.BufferTime_us() << "us, " << buffer.Size() << " in buffer, " << currentRegions.Count << " current\n";
 		while (buffer.BufferTime_us() < minBufferTime_us && currentRegions.Count > 0) {
 			RegionError^ nextRegion = currentRegions.Max;
-			buffer.Push(nextRegion);
-			UpdateArduinoScreen(nextRegion);
+			PushToBuffer(nextRegion);
 			currentRegions.Remove(nextRegion);
 		}
 		//std::cout << "After: " << buffer.BufferTime_us() << "us, " << buffer.Size() << " in buffer, " << currentRegions.Count << " current\n";
@@ -134,6 +139,25 @@ private:
 				initialRegions[x, y] = gcnew RegionError(x, y);
 			}
 		}
+	}
+
+	void PushAllPixels() {
+		for (int x = 0; x < ArduinoScreen::width; x++) {
+			for (int y = 0; y < ArduinoScreen::height; y++) {
+				PushToBuffer(initialRegions[x, y]);
+			}
+		}
+	}
+
+	void PerformanceTest() {
+		auto time = clock();
+		PushAllPixels();
+		while (buffer.BufferTime_us() < minBufferTime_us) {
+			Sleep(1);
+		}
+		time = (clock() - time) * 1000;
+		auto regionTime = time / (ArduinoScreen::width * ArduinoScreen::height);
+		std::cout << "Total time: " << time << " us, region time: " << regionTime << " us\n";
 	}
 
 public:
@@ -158,7 +182,10 @@ protected:
 			if ((frameQueue->TryPop(target) || currentRegions.Count == 0) && target) {
 				ProcessFrame(target);
 			}
+
+			//PerformanceTest();
 			PushRegionsIfNeeded();
+
 			Sleep(1);
 		}
 	}

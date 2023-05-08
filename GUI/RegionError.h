@@ -35,7 +35,7 @@ public:
 	RegionError(int x, int y) : Region(x, y) {}
 
 	void SetPriority(Color16^ targetColor, Color16^ arduinoColor) {
-		color.Set(targetColor);
+		color = *targetColor;
 
 		scoreR = scoreG = scoreB = 0;
 		AddColorError(targetColor, arduinoColor, 1);
