@@ -132,6 +132,6 @@ public:
 	ClipRectangle^ clipRectangle;
 	ThreadSafeQueue<ArduinoScreen^> frameQueue;
 
-	FrameGenerator(CheckBox^ zoomEnabled, CheckBox^ hqEnabled, CheckBox^ ditherEnabled, ClipRectangle^ clipRectangle) : frameQueue(1),
-		zoomEnabled(zoomEnabled), hqEnabled(hqEnabled), ditherEnabled(ditherEnabled), clipRectangle(clipRectangle) {}
+	FrameGenerator(CheckBox^ zoomEnabled, CheckBox^ hqEnabled, CheckBox^ ditherEnabled, ClipRectangle^ clipRectangle) : ThreadWrapper("FrameGenerator"),
+		frameQueue(1), zoomEnabled(zoomEnabled), hqEnabled(hqEnabled), ditherEnabled(ditherEnabled), clipRectangle(clipRectangle) {}
 };

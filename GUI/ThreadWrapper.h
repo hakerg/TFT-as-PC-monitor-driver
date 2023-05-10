@@ -6,7 +6,9 @@ using namespace System::Threading;
 public ref class ThreadWrapper abstract
 {
 public:
-    ThreadWrapper()
+    String^ name;
+
+    ThreadWrapper(String^ name) : name(name)
     {
         running = false;
     }
@@ -20,6 +22,7 @@ public:
     {
         running = true;
         thread = gcnew Thread(gcnew ThreadStart(this, &ThreadWrapper::ThreadLoop));
+        thread->Name = name;
         thread->Start();
     }
 

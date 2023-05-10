@@ -139,7 +139,7 @@ public:
 	bool error;
 	ArduinoBuffer^ buffer;
 
-	Arduino(CheckBox^ touchEnabled, ClipRectangle^ clipRectangle, SerialPort* serialPort, ArduinoBuffer^ buffer) :
+	Arduino(CheckBox^ touchEnabled, ClipRectangle^ clipRectangle, SerialPort* serialPort, ArduinoBuffer^ buffer) : ThreadWrapper("Arduino"),
 		touchEnabled(touchEnabled), clipRectangle(clipRectangle), serialPort(serialPort), buffer(buffer)
 	{
 		error = false;
