@@ -4,7 +4,7 @@
 
 using namespace System::Collections::Generic;
 
-value class Color16
+ref class Color16
 {
 private:
 	static initonly array<int, 2>^ ditherR = gcnew array<int, 2>(2, 4) { { 7, 1, 6, 0 }, { 3, 5, 2, 4 } };
@@ -18,16 +18,15 @@ public:
 
 	Color16(int r, int g, int b) : r(r), g(g), b(b) {}
 
-	void Set(const RGBQUAD& color)
+	Color16(const RGBQUAD& color)
 	{
 		r = color.rgbRed >> 3;
 		g = color.rgbGreen >> 2;
 		b = color.rgbBlue >> 3;
 	}
 
-	void SetDithered(const RGBQUAD& color, int x, int y)
+	Color16(const RGBQUAD& color, int x, int y) : Color16(color)
 	{
-		Set(color);
 		if ((color.rgbRed & 7) > ditherR[y & 1, x & 3] && r < 0x1F)
 		{
 			r++;

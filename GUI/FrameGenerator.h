@@ -109,7 +109,7 @@ protected:
 				{
 					for (int x = 0; x < ArduinoScreen::width; x++)
 					{
-						target->At(x, y).SetDithered(screenData->At(x, y), x, y);
+						target->At(x, y) = gcnew Color16(screenData->At(x, y), x, y);
 					}
 				}
 			}
@@ -119,7 +119,7 @@ protected:
 				{
 					for (int x = 0; x < ArduinoScreen::width; x++)
 					{
-						target->At(x, y).Set(screenData->At(x, y));
+						target->At(x, y) = gcnew Color16(screenData->At(x, y));
 					}
 				}
 			}

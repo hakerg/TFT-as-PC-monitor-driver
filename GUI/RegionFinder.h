@@ -19,9 +19,9 @@ ref class ScoredRegionComparer : public IComparer<ScoredRegion^>
 public:
 	virtual int Compare(ScoredRegion^ a, ScoredRegion^ b)
 	{
-		if (a->calc.priority != b->calc.priority)
+		if (a->priority != b->priority)
 		{
-			return a->calc.priority > b->calc.priority ? 1 : -1;
+			return a->priority > b->priority ? 1 : -1;
 		}
 
 		if (a->sizeY != b->sizeY)
@@ -51,8 +51,8 @@ public:
 ref class RegionFinder : public ThreadWrapper {
 private:
 	static const int minBufferTime_us = 100 * 1000; // 100ms
+	static const int maxScore = 100;
 
-	array<ScoredRegion^, 2>^ initialRegions;
 	array<ScoredRegion^, 2>^ regionArray;
 	SortedSet<ScoredRegion^> currentRegions;
 
@@ -70,8 +70,7 @@ private:
 	void PrepareUnitRegions(ArduinoScreen^ target) {
 		for (int x = 0; x < ArduinoScreen::width; x++) {
 			for (int y = 0; y < ArduinoScreen::height; y++) {
-				regionArray[x, y] = initialRegions[x, y];
-				regionArray[x, y]->InitPriority(target->At(x, y), arduinoScreen.At(x, y));
+				regionArray[x, y] = gcnew ScoredRegion(x, y, target->At(x, y), arduinoScreen.At(x, y));
 			}
 		}
 	}
@@ -79,14 +78,14 @@ private:
 	void TryMerge(int x1, int y1, int x2, int y2, int sizeMultX, int sizeMultY) {
 		ScoredRegion^ a = regionArray[x1, y1];
 		ScoredRegion^ b = regionArray[x2, y2];
-		if (a->calc.priority <= 0 || b->calc.priority <= 0 || a->sizeX != b->sizeX || a->sizeY != b->sizeY) {
+		if (a->priority <= 0 || b->priority <= 0 || a->sizeX != b->sizeX || a->sizeY != b->sizeY) {
 			return;
 		}
-		ScoredRegionCalculation calc(a, b);
-		if (calc.priority >= a->calc.priority && calc.priority >= b->calc.priority) {
-			regionArray[x1, y1] = gcnew ScoredRegion(x1, y1, a->sizeX * sizeMultX, a->sizeY * sizeMultY, calc);
-			a->calc.priority = 0;
-			b->calc.priority = 0;
+		ScoredRegion^ merged = gcnew ScoredRegion(x1, y1, a->sizeX * sizeMultX, a->sizeY * sizeMultY, a, b);
+		if (merged->priority > a->priority && merged->priority > b->priority) {
+			regionArray[x1, y1] = merged;
+			a->priority = 0;
+			b->priority = 0;
 		}
 	}
 
@@ -113,7 +112,7 @@ private:
 		for (int x = 0; x < ArduinoScreen::width; x++) {
 			for (int y = 0; y < ArduinoScreen::height; y++) {
 				ScoredRegion^ region = regionArray[x, y];
-				if (region->calc.priority <= 0) {
+				if (region->priority <= 0) {
 					continue;
 				}
 				currentRegions.Add(region);
@@ -141,28 +140,19 @@ private:
 			PushToBuffer(nextRegion);
 			currentRegions.Remove(nextRegion);
 		}
+		while (currentRegions.Count > 0) {
+			ScoredRegion^ nextRegion = currentRegions.Max;
+			if (nextRegion->score > maxScore) {
+				PushToBuffer(nextRegion);
+			}
+			currentRegions.Remove(nextRegion);
+		}
 		//std::cout << "After: " << buffer.BufferTime_us() << "us, " << buffer.Size() << " in buffer, " << currentRegions.Count << " current\n";
-	}
-
-	void InitRegions() {
-		for (int x = 0; x < ArduinoScreen::width; x++) {
-			for (int y = 0; y < ArduinoScreen::height; y++) {
-				initialRegions[x, y] = gcnew ScoredRegion(x, y, 1, 1);
-			}
-		}
-	}
-
-	void PushAllPixels() {
-		for (int x = 0; x < ArduinoScreen::width; x++) {
-			for (int y = 0; y < ArduinoScreen::height; y++) {
-				PushToBuffer(initialRegions[x, y]);
-			}
-		}
 	}
 
 	void PerformanceTest() {
 		auto time = clock();
-		PushAllPixels();
+		//PushAllPixels();
 		while (buffer.BufferTime_us() < minBufferTime_us) {
 			Sleep(1);
 		}
@@ -179,23 +169,23 @@ public:
 	RegionFinder(ThreadSafeQueue<ArduinoScreen^>^ frameQueue) : ThreadWrapper("RegionFinder"), frameQueue(frameQueue),
 		arduinoScreen(gcnew Color16(0, 0, 31)), currentRegions(gcnew ScoredRegionComparer()) {
 		regionArray = gcnew array<ScoredRegion^, 2>(ArduinoScreen::width, ArduinoScreen::height);
-		initialRegions = gcnew array<ScoredRegion^, 2>(ArduinoScreen::width, ArduinoScreen::height);
-		InitRegions();
 	}
 
 protected:
 	// Odziedziczono za poœrednictwem elementu ThreadWrapper
 	void ThreadLoop() override
 	{
+		//ArduinoScreen^ target = frameQueue->WaitAndPop();
 		while (running)
 		{
 			ArduinoScreen^ target;
 			frameQueue->TryPop(target);
 			if (target) {
-				ProcessFrame(target);
-
-				//PerformanceTest();
-				PushRegionsIfNeeded();
+				if (buffer.BufferTime_us() < minBufferTime_us) {
+					ProcessFrame(target);
+					//PerformanceTest();
+					PushRegionsIfNeeded();
+				}
 			}
 
 			Sleep(1);

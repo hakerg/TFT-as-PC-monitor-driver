@@ -129,7 +129,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ScoredRegionCalculation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arduino.h" />
@@ -145,7 +144,6 @@
     <ClInclude Include="Region.h" />
     <ClInclude Include="ScoredRegion.h" />
     <ClInclude Include="RegionFinder.h" />
-    <ClInclude Include="ScoredRegionCalculation.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="ThreadSafeQueue.h" />
     <ClInclude Include="ThreadWrapper.h" />

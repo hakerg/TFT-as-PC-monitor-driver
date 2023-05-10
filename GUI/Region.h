@@ -26,20 +26,20 @@ public:
 	const int y;
 	const int sizeX;
 	const int sizeY;
-	Color16 color;
+	Color16^ color;
 	const int endX;
 	const int endY;
 	const int drawingTime_us;
 
-	Region(int x, int y, int sizeX, int sizeY) :
-		x(x), y(y), sizeX(sizeX), sizeY(sizeY), endX(x + sizeX), endY(y + sizeY),
+	Region(int x, int y, int sizeX, int sizeY, Color16^ color) :
+		x(x), y(y), sizeX(sizeX), sizeY(sizeY), color(color), endX(x + sizeX), endY(y + sizeY),
 		drawingTime_us(GetDrawingTime_us()) {}
 
 	void FillData(uint8_t* data) {
 		data[0] = x & 0xFF;
 		data[1] = y;
 		data[2] = (x >> 8) | (log2(sizeX) << 1) | (log2(sizeY) << 5);
-		*(uint16_t*)&data[3] = color.To565();
+		*(uint16_t*)&data[3] = color->To565();
 	}
 
 	static int GetDrawingTime_us(int pixelCount) {
