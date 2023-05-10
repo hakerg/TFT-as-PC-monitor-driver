@@ -123,6 +123,7 @@ private:
 	void ProcessFrame(ArduinoScreen^ target) {
 		// TODO: add pixel-by-pixel mode in regions
 		// TODO: priority depends on last update time
+		// FIXME: never-ending transmission when screen is static
 		PrepareUnitRegions(target);
 		MergeRegions();
 		PrepareCurrentRegions();
